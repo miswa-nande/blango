@@ -47,7 +47,11 @@ INSTALLED_APPS = [
     'django.contrib.staticfiles',
     'blog',
     'crispy_forms',
+
+    'rest_framework',
+    'rest_framework.authtoken',
 ]
+
 
 MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',
