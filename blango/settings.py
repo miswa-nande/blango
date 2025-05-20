@@ -54,6 +54,7 @@ class Dev(Configuration):
         'crispy_forms',
         'rest_framework',
         'rest_framework.authtoken',
+        'debug_toolbar',
     ]
 
 
@@ -65,6 +66,7 @@ class Dev(Configuration):
         'django.contrib.auth.middleware.AuthenticationMiddleware',
         'django.contrib.messages.middleware.MessageMiddleware',
     #     'django.middleware.clickjacking.XFrameOptionsMiddleware',
+        'debug_toolbar.middleware.DebugToolbarMiddleware',
     ]
 
     ROOT_URLCONF = 'blango.urls'
@@ -86,7 +88,7 @@ class Dev(Configuration):
     ]
 
     WSGI_APPLICATION = 'blango.wsgi.application'
-
+    INTERNAL_IPS = ["192.168.11.179"]
 
     # Database
     # https://docs.djangoproject.com/en/3.2/ref/settings/#databases
