@@ -1,0 +1,18 @@
+<!-- templates/blog/post-detail.html -->
+{% extends "base.html" %}
+{% block content %}
+  <h1>{{ post.title }}</h1>
+  <p><strong>Author:</strong> {{ post.author }}</p>
+  <p>{{ post.content }}</p>
+
+  <h3>Leave a Comment</h3>
+  {% if comment_form %}
+    <form method="post">
+      {% csrf_token %}
+      {{ comment_form.as_p }}
+      <button type="submit">Submit</button>
+    </form>
+  {% else %}
+    <p><em>Log in to comment.</em></p>
+  {% endif %}
+{% endblock %}

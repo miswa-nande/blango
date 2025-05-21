@@ -69,7 +69,7 @@ class Dev(Configuration):
         'debug_toolbar.middleware.DebugToolbarMiddleware',
     ]
 
-    ROOT_URLCONF = 'blango.urls'
+    ROOT_URLCONF = 'blog.urls'
 
     TEMPLATES = [
         {
