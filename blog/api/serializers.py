@@ -1,5 +1,25 @@
 from rest_framework import serializers
 from blog.models import Post, Tag
+<<<<<<< HEAD
+from django.contrib.auth import get_user_model
+
+User = get_user_model()
+
+class PostSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Post
+        fields = "__all__"
+
+class TagSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Tag
+        fields = "__all__"
+
+class UserSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = User
+        fields = "__all__"
+=======
 from django.contrib.auth.models import User
 
 
@@ -25,3 +45,4 @@ class PostSerializer(serializers.ModelSerializer):
         model = Post
         fields = "__all__"
         read_only_fields = ["modified_at", "created_at"]
+>>>>>>> 467cdd6deee058e2f719d5f4bd79c1dc2763ed8f
