@@ -7,24 +7,40 @@ from django.utils import timezone
 from django.utils.decorators import method_decorator
 from django.views.decorators.cache import cache_page
 from django.views.decorators.vary import vary_on_headers
+from datetime import timedelta
+from django.http import Http404
 
 
 class PostViewSet(viewsets.ModelViewSet):
     queryset = Post.objects.all()
-    serializer_class = PostSerializer  # You probably want this here too
+    serializer_class = PostSerializer
 
     def get_queryset(self):
         user = self.request.user
         if user.is_anonymous:
-            # Only published posts for anonymous users
-            return self.queryset.filter(published_at__lte=timezone.now())
-        if user.is_staff:
-            # Staff users can see all posts
-            return self.queryset
-        # Regular users can see published posts or their own posts
-        return self.queryset.filter(
-            Q(published_at__lte=timezone.now()) | Q(author=user)
-        )
+            queryset = self.queryset.filter(published_at__lte=timezone.now())
+        elif user.is_staff:
+            queryset = self.queryset
+        else:
+            queryset = self.queryset.filter(
+                Q(published_at__lte=timezone.now()) | Q(author=user)
+            )
+
+        # Handle optional time period filter
+        time_period_name = self.kwargs.get("period_name")
+        if not time_period_name:
+            return queryset
+
+        if time_period_name == "new":
+            return queryset.filter(published_at__gte=timezone.now() - timedelta(hours=1))
+        elif time_period_name == "today":
+            return queryset.filter(published_at__date=timezone.now().date())
+        elif time_period_name == "week":
+            return queryset.filter(published_at__gte=timezone.now() - timedelta(days=7))
+        else:
+            raise Http404(
+                f"Time period '{time_period_name}' is not valid, should be 'new', 'today', or 'week'."
+            )
 
     @method_decorator(cache_page(120))
     @method_decorator(vary_on_headers("Authorization", "Cookie"))
@@ -33,13 +49,31 @@ class PostViewSet(viewsets.ModelViewSet):
 
 
 class PostList(generics.ListCreateAPIView):
-    queryset = Post.objects.all()
     serializer_class = PostSerializer
+
+    def get_queryset(self):
+        user = self.request.user
+        if user.is_anonymous:
+            return Post.objects.filter(published_at__lte=timezone.now())
+        if user.is_staff:
+            return Post.objects.all()
+        return Post.objects.filter(
+            Q(published_at__lte=timezone.now()) | Q(author=user)
+        )
 
 
 class PostDetail(generics.RetrieveUpdateDestroyAPIView):
-    queryset = Post.objects.all()
     serializer_class = PostSerializer
+
+    def get_queryset(self):
+        user = self.request.user
+        if user.is_anonymous:
+            return Post.objects.filter(published_at__lte=timezone.now())
+        if user.is_staff:
+            return Post.objects.all()
+        return Post.objects.filter(
+            Q(published_at__lte=timezone.now()) | Q(author=user)
+        )
 
 
 class UserDetail(generics.RetrieveAPIView):
