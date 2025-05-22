@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 
 codio@financeariel-vocallemon:~/workspace$ python3 blango/manage.py runserver 0.0.0.0:8000
 Watching for file changes with StatReloader
@@ -134,3 +135,13 @@ class TagViewSet(viewsets.ModelViewSet):
     @method_decorator(cache_page(300))
     def retrieve(self, *args, **kwargs):
         return super(TagViewSet, self).retrieve(*args, **kwargs)
+=======
+from rest_framework import generics
+from blango_auth.models import User
+from blog.api.serializers import UserSerializer, PostSerializer  # Ensure both are imported
+
+class UserDetail(generics.RetrieveAPIView):
+    lookup_field = "email"
+    queryset = User.objects.all()
+    serializer_class = UserSerializer
+>>>>>>> 467cdd6deee058e2f719d5f4bd79c1dc2763ed8f
