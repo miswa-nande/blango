@@ -2,6 +2,7 @@ import debug_toolbar
 from django.conf import settings
 from django.contrib import admin
 from django.urls import path, include
+from rest_framework_simplejwt.views import TokenObtainPairView, TokenRefreshView
 
 import blog.views
 
@@ -13,6 +14,10 @@ urlpatterns = [
     
     # ✅ Include API URLs here
     path("api/", include("blog.api.urls")),
+
+    # ✅ JWT Authentication endpoints
+    path("jwt/", TokenObtainPairView.as_view(), name="jwt_obtain_pair"),
+    path("jwt/refresh/", TokenRefreshView.as_view(), name="jwt_refresh"),
 ]
 
 # Add debug toolbar routes only in DEBUG mode

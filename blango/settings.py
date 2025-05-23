@@ -14,6 +14,7 @@ from pathlib import Path
 from configurations import Configuration
 from configurations import Configuration, values
 import dj_database_url
+from datetime import timedelta
 
 class Dev(Configuration):
         
@@ -69,11 +70,16 @@ class Dev(Configuration):
         'debug_toolbar.middleware.DebugToolbarMiddleware',
     ]
 
+
+    
+
     REST_FRAMEWORK = {
     "DEFAULT_AUTHENTICATION_CLASSES": [
-        "rest_framework.authentication.SessionAuthentication",
-        "rest_framework.authentication.TokenAuthentication",
-    ],
+            "rest_framework.authentication.BasicAuthentication",
+            "rest_framework.authentication.SessionAuthentication",
+            "rest_framework.authentication.TokenAuthentication",
+            "rest_framework_simplejwt.authentication.JWTAuthentication"
+        ],
     "DEFAULT_THROTTLE_CLASSES": [
         "blog.api.throttling.AnonSustainedThrottle",
         "blog.api.throttling.AnonBurstThrottle",
@@ -87,6 +93,12 @@ class Dev(Configuration):
         "user_burst": "100/minute",
     },
 }
+
+SIMPLE_JWT = {
+    "ACCESS_TOKEN_LIFETIME": timedelta(days=1),
+    "REFRESH_TOKEN_LIFETIME": timedelta(days=7),
+}
+
 
 
     ROOT_URLCONF = 'blog.urls'
@@ -204,5 +216,6 @@ class Dev(Configuration):
 }  
 
 class Prod(Dev):
+    
     DEBUG = False  # Force DEBUG off in production for security
     SECRET_KEY = values.SecretValue()  # Require SECRET_KEY from env, no default allowed
