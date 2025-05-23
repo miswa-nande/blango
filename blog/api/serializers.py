@@ -9,6 +9,8 @@ class UserSerializer(serializers.ModelSerializer):
         fields = ["id", "email", "first_name", "last_name"]
 
 
+
+
 class TagField(serializers.SlugRelatedField):
     def to_internal_value(self, data):
         try:
