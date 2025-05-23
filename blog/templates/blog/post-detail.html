@@ -1,8 +1,18 @@
 <!-- templates/blog/post-detail.html -->
 {% extends "base.html" %}
+
 {% block content %}
   <h1>{{ post.title }}</h1>
   <p><strong>Author:</strong> {{ post.author }}</p>
+
+  {% if post.hero_image %}
+    <div class="row">
+      <div class="col">
+        <img class="img-fluid" src="{{ post.hero_image.url }}" alt="Hero image for {{ post.title }}">
+      </div>
+    </div>
+  {% endif %}
+
   <p>{{ post.content }}</p>
 
   <h3>Leave a Comment</h3>

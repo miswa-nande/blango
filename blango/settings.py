@@ -11,13 +11,12 @@ https://docs.djangoproject.com/en/3.2/ref/settings/
 """
 import os
 from pathlib import Path
-from configurations import Configuration
 from configurations import Configuration, values
 import dj_database_url
 from datetime import timedelta
 
 class Dev(Configuration):
-        
+
     # Build paths inside the project like this: BASE_DIR / 'subdir'.
     BASE_DIR = Path(__file__).resolve().parent.parent
 
@@ -52,6 +51,7 @@ class Dev(Configuration):
         'django.contrib.messages',
         'django.contrib.staticfiles',
         'blog',
+        'versatileimagefield',
         'crispy_forms',
         'rest_framework',
         'rest_framework.authtoken',
@@ -71,34 +71,31 @@ class Dev(Configuration):
     ]
 
 
-    
-
     REST_FRAMEWORK = {
-    "DEFAULT_AUTHENTICATION_CLASSES": [
+        "DEFAULT_AUTHENTICATION_CLASSES": [
             "rest_framework.authentication.BasicAuthentication",
             "rest_framework.authentication.SessionAuthentication",
             "rest_framework.authentication.TokenAuthentication",
             "rest_framework_simplejwt.authentication.JWTAuthentication"
         ],
-    "DEFAULT_THROTTLE_CLASSES": [
-        "blog.api.throttling.AnonSustainedThrottle",
-        "blog.api.throttling.AnonBurstThrottle",
-        "blog.api.throttling.UserSustainedThrottle",
-        "blog.api.throttling.UserBurstThrottle",
-    ],
-    "DEFAULT_THROTTLE_RATES": {
-        "anon_sustained": "500/day",
-        "anon_burst": "10/minute",
-        "user_sustained": "5000/day",
-        "user_burst": "100/minute",
-    },
-}
+        "DEFAULT_THROTTLE_CLASSES": [
+            "blog.api.throttling.AnonSustainedThrottle",
+            "blog.api.throttling.AnonBurstThrottle",
+            "blog.api.throttling.UserSustainedThrottle",
+            "blog.api.throttling.UserBurstThrottle",
+        ],
+        "DEFAULT_THROTTLE_RATES": {
+            "anon_sustained": "500/day",
+            "anon_burst": "10/minute",
+            "user_sustained": "5000/day",
+            "user_burst": "100/minute",
+        },
+    }
 
-SIMPLE_JWT = {
-    "ACCESS_TOKEN_LIFETIME": timedelta(days=1),
-    "REFRESH_TOKEN_LIFETIME": timedelta(days=7),
-}
-
+    SIMPLE_JWT = {
+        "ACCESS_TOKEN_LIFETIME": timedelta(days=1),
+        "REFRESH_TOKEN_LIFETIME": timedelta(days=7),
+    }
 
 
     ROOT_URLCONF = 'blog.urls'
@@ -126,7 +123,7 @@ SIMPLE_JWT = {
     # https://docs.djangoproject.com/en/3.2/ref/settings/#databases
 
     DATABASES = values.DatabaseURLValue(f"sqlite:///{BASE_DIR}/db.sqlite3")
-    
+
     # Password validation
     # https://docs.djangoproject.com/en/3.2/ref/settings/#auth-password-validators
 
@@ -146,10 +143,10 @@ SIMPLE_JWT = {
     ]
 
     PASSWORD_HASHERS = [
-      'django.contrib.auth.hashers.Argon2PasswordHasher',
-      'django.contrib.auth.hashers.PBKDF2PasswordHasher',
-      'django.contrib.auth.hashers.PBKDF2SHA1PasswordHasher',
-      'django.contrib.auth.hashers.BCryptSHA256PasswordHasher',
+        'django.contrib.auth.hashers.Argon2PasswordHasher',
+        'django.contrib.auth.hashers.PBKDF2PasswordHasher',
+        'django.contrib.auth.hashers.PBKDF2SHA1PasswordHasher',
+        'django.contrib.auth.hashers.BCryptSHA256PasswordHasher',
     ]
 
     # Internationalization
@@ -171,51 +168,54 @@ SIMPLE_JWT = {
 
     STATIC_URL = '/static/'
 
+    MEDIA_ROOT = BASE_DIR / "media"
+    MEDIA_URL = "/media/"
+
     # Default primary key field type
     # https://docs.djangoproject.com/en/3.2/ref/settings/#default-auto-field
 
     DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
     LOGGING = {
-    "version": 1,
-    "disable_existing_loggers": False,
-    "filters": {
-        "require_debug_false": {
-            "()": "django.utils.log.RequireDebugFalse",
+        "version": 1,
+        "disable_existing_loggers": False,
+        "filters": {
+            "require_debug_false": {
+                "()": "django.utils.log.RequireDebugFalse",
+            },
         },
-    },
-    "formatters": {
-        "verbose": {
-            "format": "{levelname} {asctime} {module} {process:d} {thread:d} {message}",
-            "style": "{",
+        "formatters": {
+            "verbose": {
+                "format": "{levelname} {asctime} {module} {process:d} {thread:d} {message}",
+                "style": "{",
+            },
         },
-    },
-    "handlers": {
-        "console": {
-            "class": "logging.StreamHandler",
-            "stream": "ext://sys.stdout",
-            "formatter": "verbose",
+        "handlers": {
+            "console": {
+                "class": "logging.StreamHandler",
+                "stream": "ext://sys.stdout",
+                "formatter": "verbose",
+            },
+            "mail_admins": {
+                "level": "ERROR",
+                "class": "django.utils.log.AdminEmailHandler",
+                "filters": ["require_debug_false"],
+            },
         },
-        "mail_admins": {
-            "level": "ERROR",
-            "class": "django.utils.log.AdminEmailHandler",
-            "filters": ["require_debug_false"],
+        "loggers": {
+            "django.request": {
+                "handlers": ["mail_admins"],
+                "level": "ERROR",
+                "propagate": True,
+            },
         },
-    },
-    "loggers": {
-        "django.request": {
-            "handlers": ["mail_admins"],
-            "level": "ERROR",
-            "propagate": True,
+        "root": {
+            "handlers": ["console"],
+            "level": "DEBUG",
         },
-    },
-    "root": {
-        "handlers": ["console"],
-        "level": "DEBUG",
-    },
-}  
+    }
 
 class Prod(Dev):
-    
+
     DEBUG = False  # Force DEBUG off in production for security
     SECRET_KEY = values.SecretValue()  # Require SECRET_KEY from env, no default allowed
